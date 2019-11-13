@@ -21,34 +21,46 @@ class ClickMeApp extends StatefulWidget{
 
 class ChangeText extends State<ClickMeApp>{
 
-  String defaultText= "Click me!!";
-  int i=0;
+  final myController=TextEditingController();
+  final myGlobalController = GlobalKey<FormState>();
 
-  void changeText(){
 
-    setState(() {
-      if(i%2==0)
-        defaultText="You Clicked!!";
-      else
-        defaultText="Click me!!";
-      i++;
-    });
+  @override
+  void dispose() {
+    myController.dispose();
+    super.dispose();
   }
 
+  void sayHello(){
+    if(myGlobalController.currentState.validate()){
+      showDialog(context: context,builder: (context){
+        return AlertDialog(content: Text(""+myController.text),);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title:new Text('Hello World App'),
-      ),
-      body: Center(child:new Text(defaultText, style: new TextStyle(
-          fontWeight: FontWeight.bold,
-          color: Colors.blue),
-      ),),
-    floatingActionButton: FloatingActionButton(onPressed: changeText,
-      tooltip: 'Click Me',
-      child: Icon(Icons.mouse),),);
+        appBar: AppBar(
+          title:new Text('Hello World App'),
+        ),
+        body: Form(key: myGlobalController,
+        child: Column(mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          TextFormField(
+            // ignore: missing_return
+            validator: (value){
+              if(value.isEmpty) return 'Please insert';
+            },
+            controller: myController,
+            decoration: InputDecoration(hintText: "Enter something"),
+
+          ),
+          Padding(padding: const EdgeInsets.symmetric(vertical: 16.0), child:
+          RaisedButton(onPressed: sayHello,child: Text("Say Hi!"),),),
+        ],),)
+    );
   }
 
 }
